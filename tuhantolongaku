@@ -1,0 +1,287 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <time.h>
+
+
+void printLine(char character, int length) {
+    for (int i = 1; i <= length; i++) {
+             printf("%c",character);
+    }
+
+    printf("\n");
+}
+
+struct Item {
+    char name[50000];
+    int price;
+};
+
+struct Cart {
+    char name[50000];
+    int price;
+    int qty;
+    int totalPrice;
+    int disc;
+};
+
+void chooseItem(struct Item items[5],struct Cart carts[5],int indexItem) {
+    if(indexItem >= 6 || indexItem == 0) {
+        printf("Pilihan anda tidak ada dalam daftar. Silahkan pilih dengan benar\n");
+        return;
+    }
+    int quantity;
+    printf("Masukkan jumlah barang: ");
+    scanf("%d",&quantity );
+    printf("\n");
+    printLine('=', 60);
+    printf("\n");
+
+    carts[indexItem-1].qty = quantity;
+}
+
+void reset(struct Cart carts[5]) {
+    for(int i =0; i < 5; i++) {
+        carts[i].qty = 0;
+    }
+}
+
+void sortCart(struct Cart carts[5]) {
+    for(int i =0; i < 5; i ++) {
+        for(int j = i + 1; j < 5; j++) {
+            if(carts[i].qty < carts[j].qty) {
+                struct Cart tmp = carts[i];
+                carts[i] = carts[j];
+                carts[j] = tmp;
+            }
+        }
+    }
+}
+
+void summaryInventory(struct Cart carts[5]) {
+    for(int i =0; i < 5; i++) {
+        countTotalPrice(&carts[i].totalPrice,carts[i].price, carts[i].qty);
+        countDisc(&carts[i].disc, carts[i].totalPrice, carts[i].qty);
+    }
+}
+void countTotalPrice(int *totalPrice, int price, int qty) {
+    *totalPrice = price * qty;
+}
+
+void countDisc(int *disc, int totalPrice, int qty) {
+    if(qty >= 3 && qty < 5) {
+        *disc = totalPrice * 0.1;
+    }else if(qty >= 5){
+        *disc = totalPrice * 0.15;
+    }
+
+}
+
+int sumTotalPrice(struct Cart carts[5]) {
+    int result = 0;
+    for(int i = 0; i < 5; i++) {
+        result += carts[i].totalPrice;
+    }
+
+    return result;
+}
+int sumDisc(struct Cart carts[5]) {
+    int result = 0;
+    for(int i =0; i < 5; i++) {
+        result += carts[i].disc;
+    }
+
+    return result;
+}
+int countTotalPay(struct Cart carts[5]){
+    int totalPrice = sumTotalPrice(carts);
+    int totalDisc = sumDisc(carts);
+    return totalPrice - totalDisc;
+}
+
+char* generateStructID() {
+    time_t currentTime;
+    char* timeString = (char*)malloc(30 * sizeof(char));
+    currentTime = time(NULL);
+    sprintf(timeString, "%ld", currentTime);
+
+    return timeString;
+}
+
+void generateStruct(struct Cart carts[5], int totalPrice, int totalDisc, int totalPay, int payment, int change) {
+    FILE *file;
+    char *structID = generateStructID();
+    char structName[50] = "";
+    strcat(structName, structID);
+    strcat(structName,".txt");
+
+    file = fopen(structName, "w");
+    if(file == NULL){
+        printf("Error while creating struct file");
+        return;
+    }
+
+    fprintf(file, "=================================================================================================\n");
+    fprintf(file,"\t\t\t\t\t\tToko Skensa\n");
+    fprintf(file,"\t\t\t\t\t\t  Bali\n");
+    fprintf(file,"\t\t\t\t\t  Telp: 0882671278\n");
+    fprintf(file, "ID struk: ");
+    fprintf(file, structID);
+    fprintf(file, "\n");
+    fprintf(file, "==================================================================================================\n");
+    fprintf(file,"Nama barang\t\t\t|Harga\t\t\t|Total\t\t\t|Diskon\t\t|\n");
+     for(int i = 0; i < 5; i++) {
+        if(carts[i].qty !=0) {
+            fprintf(file,"%dx %s\t\t\t|Rp%d\t\t\t|Rp%d\t\t\t|Rp%d\t\t|\n",carts[i].qty,carts[i].name, carts[i].price, carts[i].totalPrice, carts[i].disc);
+        }
+    }
+    fprintf(file, "===================================================================================================");
+    fprintf(file, "\n");
+    fprintf(file, "\n");
+    fprintf(file, "Total harga = Rp%d\n", totalPrice);
+    fprintf(file, "Total diskon = Rp%d\n", totalDisc);
+    fprintf(file, "Tagihan = Rp%d\n", totalPay);
+    fprintf(file, "Pembayaran = Rp%d\n", payment);
+    fprintf(file, "Kembalian = Rp%d", change);
+    fprintf(file, "\n");
+    fprintf(file, "\n");
+    fprintf(file, "\n");
+
+    time_t currentTime;
+    char *timeStr;
+    currentTime = time(NULL);
+    timeStr = ctime(&currentTime);
+    fprintf(file, timeStr);
+
+}
+int main() {
+    struct Item items[5] = {
+        {
+            name: "Buku Tulis",
+            price: 5000,
+        },
+        {
+            name: "Pensil",
+            price: 2000,
+        },
+        {
+            name: "Penghapus",
+            price: 1000
+,
+        },
+        {
+            name: "Penggaris",
+            price: 1000,
+        },
+        {
+            name: "Bujur Sangkar",
+            price: 500,
+        },
+    };
+
+    //init cart value
+    struct Cart carts[5];
+    for (int i =0 ; i < 5; i++){
+        strcpy(carts[i].name, items[i].name);
+        carts[i].price = items[i].price;
+        carts[i].qty = 0;
+        carts[i].totalPrice = 0;
+        carts[i].disc = 0;
+    }
+
+    printf("Selamat datang di toko SKENSA\n");
+    printf("Silahkan pilih barang yang anda inginkan");
+    printf("\n");
+    printf("\n");
+    printf("\n");
+
+    printLine('=', 49);
+    printf("|No|Barang\t\t\t|Harga\t\t|\t\t\t\n");
+    printLine('=', 49);
+    for(int i =0 ; i < 5; i++) {
+        printf("|%d|%s\t\t\t|%d\t\t|\t\t\t\n", i+1, items[i].name,items[i].price);
+    }
+    printLine('=', 49);
+
+    printf("\n");
+    printf("\n");
+
+    printf("99.Struk Pembayaran\n");
+    printf("55.Reset pilihan\n");
+    printf("00.Keluar\n");
+
+    printf("\n");
+    printf("\n");
+    printLine('=', 60);
+    printf("\n");
+    printf("Input pilihan yang anda inginkan: ");
+
+    int userInput;
+    do {
+        scanf("%d", &userInput);
+
+        switch(userInput) {
+        case 99:
+            break;
+        case 55:
+            reset(carts);
+            printf("Pilihan telah direset!\n");
+            printf("Input pilihan yang anda inginkan: ");
+            break;
+        case 00:
+            exit(0);
+        default:
+            chooseItem(items,carts, userInput);
+            printf("Input pilihan yang anda inginkan: ");
+        }
+
+    }while(userInput != 99);
+    printf("\n");
+    printf("\n");
+
+    sortCart(carts);
+    summaryInventory(carts);
+
+    printf("Rekap pesanan barang\n");
+    printLine('=', 100);
+    printf("|No |Jumlah  |Nama barang\t\t|Harga\t\t|Total Harga\t\t|Diskon\t\t|\n");
+    printLine('=', 100);
+    for(int i = 0; i < 5; i++) {
+        if(carts[i].qty !=0) {
+            printf("|%d |%d |%s\t\t\t|Rp%d\t\t|Rp%d\t\t\t|Rp%d\t\t|\n",i+1, carts[i].qty, carts[i].name, carts[i].price, carts[i].totalPrice, carts[i].disc);
+        }
+    }
+     printLine('=', 100);
+     printf("\n");
+
+     int totalPay = countTotalPay(carts);
+     int totalDisc = sumDisc(carts);
+     int totalPrice = sumTotalPrice(carts);
+     printf("Total harga = Rp%d\n", totalPrice);
+     printf("Total diskon = Rp%d\n", totalDisc);
+     printf("Total bayar = Rp%d\n", totalPay );
+     printf("\n");
+     printLine('=', 100);
+     printf("\n");
+
+     int userMoney;
+     do{
+        printf("Masukkan uang bayar = ");
+        scanf("%d", &userMoney);
+        if(userMoney < totalPay) {
+            printf("Uang anda kurang!\n");
+        }
+     }while(userMoney < totalPay);
+
+     int change = 0;
+     if(userMoney > totalPay) {
+        change = userMoney - totalPay;
+        printf("Kembalian = Rp%d\n", change);
+     }else{
+        printf("Uang anda pas!\n");
+     }
+
+     generateStruct(carts, totalPrice,totalDisc,totalPay,userMoney,change);
+
+     printf("Terima kasih sudah berbelanja di toko kami");
+     return 0;
+}
