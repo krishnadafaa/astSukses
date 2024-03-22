@@ -120,10 +120,11 @@ void generateStruct(struct Cart carts[5], int totalPrice, int totalDisc, int tot
         return;
     }
 
-    fprintf(file, "=================================================================================================\n");
-    fprintf(file,"\t\t\t\t\t\tToko Skensa\n");
-    fprintf(file,"\t\t\t\t\t\t  Bali\n");
-    fprintf(file,"\t\t\t\t\t  Telp: 0882671278\n");
+    fprintf(file,"===================================================================================================\n");
+    fprintf(file,"                                        Toko SKENSA                                                \n");
+    fprintf(file,"                            Jl. HOS Cokroaminoto No 84 Denpasar                                    \n");
+    fprintf(file,"                                           Bali                                                    \n");
+    fprintf(file,"                                      Telp: 0816285791                                             \n");
     fprintf(file, "ID struk: ");
     fprintf(file, structID);
     fprintf(file, "\n");
@@ -151,6 +152,8 @@ void generateStruct(struct Cart carts[5], int totalPrice, int totalDisc, int tot
     currentTime = time(NULL);
     timeStr = ctime(&currentTime);
     fprintf(file, timeStr);
+
+    printf("Struk sudah di cetak pada file : %s\n", structName);
 
 }
 int main() {
@@ -282,6 +285,7 @@ int main() {
 
      generateStruct(carts, totalPrice,totalDisc,totalPay,userMoney,change);
 
-     printf("Terima kasih sudah berbelanja di toko kami");
+     printf("Terima kasih sudah berbelanja di toko kami\n");
+     printLine('=', 100);
      return 0;
 }
