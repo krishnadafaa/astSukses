@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 
@@ -36,7 +37,7 @@ void chooseItem(struct Item items[5],struct Cart carts[5],int indexItem) {
     printLine('=', 60);
     printf("\n");
 
-    carts[indexItem-1].qty = quantity;
+    carts[indexItem-1].qty += quantity;
 }
 
 void reset(struct Cart carts[5]) {
